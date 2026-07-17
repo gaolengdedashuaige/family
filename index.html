@@ -20,6 +20,9 @@
     --away: #FF7B7B;        /* 不回家：草莓红 */
     --money: #FFAA33;       /* 金钱：芒果黄 */
     --shout: #52B5F7;       /* 喊话：天空蓝 */
+    --med: #A366FF;         /* 吃药：香芋紫 */
+    --bp: #FF6B8B;          /* 血压：西瓜红 */
+    
     --low: #52B5F7;         
     --normal: #5EC9A1;      
     --high: #FF7B7B;        
@@ -88,6 +91,8 @@
   .tag.glu{background:var(--primary);}
   .tag.money{background:var(--money);}
   .tag.memo{background:var(--ink-soft);}
+  .tag.med{background:var(--med);}
+  .tag.bp{background:var(--bp);}
   .cell .dinner{position:absolute;right:4px;bottom:4px;font-size:14px;}
   
   @media(max-width:560px){.cell{min-height:76px;}}
@@ -152,6 +157,8 @@
   .addbtn{width:100%;margin-top:16px;background:var(--primary);color:#fff;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 4px 12px rgba(255, 142, 94, 0.3);}
   .addbtn.money{background:var(--money);box-shadow:0 4px 12px rgba(255, 170, 51, 0.3);}
   .addbtn.memo{background:var(--ink);box-shadow:0 4px 12px rgba(92, 75, 64, 0.3);}
+  .addbtn.med{background:var(--med);box-shadow:0 4px 12px rgba(163, 102, 255, 0.3);}
+  .addbtn.bp{background:var(--bp);box-shadow:0 4px 12px rgba(255, 107, 139, 0.3);}
 
   /* 右下角跳动的装饰小袋鼠 */
   .deco-kangaroo{position:fixed;bottom:20px;right:20px;font-size:42px;animation:bounce 2.5s infinite;z-index:10;pointer-events:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));}
@@ -199,11 +206,12 @@
   </div>
 
   <div class="legend">
-    <span><i class="swatch" style="background:var(--low)"></i>偏低</span>
     <span><i class="swatch" style="background:var(--normal)"></i>正常</span>
-    <span><i class="swatch" style="background:var(--high)"></i>偏高</span>
+    <span><i class="swatch" style="background:var(--high)"></i>异常</span>
     <span>💰 消费</span>
     <span>📝 备忘</span>
+    <span>💊 吃药</span>
+    <span>🫀 血压</span>
     <span>🍚 回家吃</span>
   </div>
 
@@ -252,7 +260,7 @@
         <h4>📝 备忘录与行程</h4>
         <div id="memoList"></div>
         <div class="row" style="margin-top:12px;">
-          <input id="mText" style="flex:3" type="text" placeholder="比如：交水费 / 去超市">
+          <input id="mText" style="flex:3" type="text" placeholder="比如：带妈妈复查">
           <button class="addbtn memo" style="flex:1; margin-top:0;" id="mAdd">记下</button>
         </div>
       </div>
@@ -268,7 +276,7 @@
         </div>
       </div>
       
-      <!-- 3. 消费账单 (支持多货币) -->
+      <!-- 3. 消费账单 -->
       <div class="sec">
         <h4>💰 口袋开销</h4>
         <div id="expenseList"></div>
@@ -285,8 +293,31 @@
         </div>
         <button class="addbtn money" id="eAdd">＋ 记一笔开销</button>
       </div>
+
+      <!-- 4. 吃药记录 (新增) -->
+      <div class="sec">
+        <h4>💊 吃药打卡</h4>
+        <div id="medList"></div>
+        <div class="row" style="margin-top:12px;">
+          <input id="medName" style="flex:2" type="text" placeholder="药名 (如降压药)">
+          <input id="medTime" style="flex:1" type="time">
+        </div>
+        <button class="addbtn med" id="medAdd">＋ 记录吃药</button>
+      </div>
+
+      <!-- 5. 血压记录 (新增) -->
+      <div class="sec">
+        <h4>🫀 血压记录</h4>
+        <div id="bpList"></div>
+        <div class="row" style="margin-top:12px;">
+          <div><label>高压(收缩压)</label><input id="bpHigh" type="number" placeholder="120"></div>
+          <div><label>低压(舒张压)</label><input id="bpLow" type="number" placeholder="80"></div>
+          <div><label>时间</label><input id="bpTime" type="time"></div>
+        </div>
+        <button class="addbtn bp" id="bpAdd">＋ 记一条血压</button>
+      </div>
       
-      <!-- 4. 血糖记录 -->
+      <!-- 6. 血糖记录 -->
       <div class="sec" style="margin-bottom:0;">
         <h4>🩸 血糖记录</h4>
         <div id="gluList"></div>
@@ -340,7 +371,6 @@ let unlocked = false;
 let authReady = false;
 let autoScrollShouts = true; 
 
-// 本地状态
 let myName = localStorage.getItem("familyName") || "";
 let myAvatar = localStorage.getItem("familyAvatar") || "";
 
@@ -350,11 +380,9 @@ function gluColor(v){ v=+v; if(v<3.9)return "var(--low)"; if(v<=7.8)return "var(
 function escapeH(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 function getHHMM(){ const n=new Date(); return String(n.getHours()).padStart(2,"0")+":"+String(n.getMinutes()).padStart(2,"0"); }
 
-// 初始化界面
 $("who").value = myName;
 if(myAvatar) $("avatarPreview").innerHTML = `<img src="${myAvatar}">`;
 
-// 图片压缩 (Canvas Base64)
 $("avatarInput").onchange = (e) => {
   const file = e.target.files[0];
   if(!file) return;
@@ -377,7 +405,6 @@ $("avatarInput").onchange = (e) => {
   reader.readAsDataURL(file);
 };
 
-// 登录系统
 signInAnonymously(auth).catch(e => console.error("Auth Error:", e));
 onAuthStateChanged(auth, user => { 
   authReady = !!user; 
@@ -456,15 +483,11 @@ function getUserAvatarSrc(name) {
 
 function renderShouts(dataArr = null) {
   if(!dataArr) return; 
-  
   const box = $("shoutList");
   const isScrolledToBottom = box.scrollHeight - box.clientHeight <= box.scrollTop + 10;
-
   if (dataArr.length === 0) {
-    box.innerHTML = `<div class="empty">🦘 袋鼠口袋空空的，来喊第一句吧！</div>`;
-    return;
+    box.innerHTML = `<div class="empty">🦘 袋鼠口袋空空的，来喊第一句吧！</div>`; return;
   }
-
   box.innerHTML = dataArr.map(s => {
     const isMe = s.by === myName;
     return `
@@ -476,22 +499,16 @@ function renderShouts(dataArr = null) {
       </div>
     </div>`;
   }).join("");
-
   if (isScrolledToBottom || autoScrollShouts) {
-    box.scrollTop = box.scrollHeight;
-    autoScrollShouts = false;
+    box.scrollTop = box.scrollHeight; autoScrollShouts = false;
   }
 }
 
 $("shoutBtn").onclick = async () => {
-  const text = $("shoutInput").value.trim();
-  if(!text) return;
-  $("shoutInput").value = "";
-  autoScrollShouts = true; 
-  
+  const text = $("shoutInput").value.trim(); if(!text) return;
+  $("shoutInput").value = ""; autoScrollShouts = true; 
   const n = new Date();
   const timeStr = `${n.getMonth()+1}/${n.getDate()} ${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;
-  
   try {
     await setDoc(doc(db, "shouts", uid()), { text, by: myName, timeStr, timestamp: Date.now() });
   } catch(e) { alert("发送失败了，请检查网络"); }
@@ -510,7 +527,6 @@ $("todayLink").onclick=()=>{ const n=new Date(); view={y:n.getFullYear(),m:n.get
 function renderGrid() {
   $("monthTitle").textContent = `${view.y}年${view.m+1}月`;
   const grid = $("grid"); grid.innerHTML = "";
-  
   const first = new Date(view.y, view.m, 1); 
   let lead = (first.getDay() + 6) % 7; 
   const days = new Date(view.y, view.m + 1, 0).getDate(); 
@@ -529,7 +545,10 @@ function renderGrid() {
     
     let html = `<div class="d">${d}</div><div class="tags">`;
     
-    if(data.memos && data.memos.length) html += `<span class="tag memo">${data.memos.length}事</span>`;
+    // 微缩标签
+    if(data.memos && data.memos.length) html += `<span class="tag memo">事</span>`;
+    if(data.medications && data.medications.length) html += `<span class="tag med">💊</span>`;
+    if(data.bloodPressure && data.bloodPressure.length) html += `<span class="tag bp">🫀</span>`;
     if(data.expenses && data.expenses.length) html += `<span class="tag money">¥</span>`;
     if(data.glucose && data.glucose.length) {
       const last = data.glucose[data.glucose.length-1];
@@ -550,9 +569,12 @@ function openDay(y, m, d) {
   $("dayTitle").textContent = `${m+1}月${d}日`;
   $("dayWeekday").textContent = WD[new Date(y, m, d).getDay()];
   
+  // 清空表单
   $("gVal").value=""; $("gNote").value=""; $("gTime").value=getHHMM(); $("gSlot").selectedIndex=0;
   $("eVal").value=""; $("eNote").value="";
   $("mText").value="";
+  $("medName").value=""; $("medTime").value=getHHMM();
+  $("bpHigh").value=""; $("bpLow").value=""; $("bpTime").value=getHHMM();
   
   renderDay();
   $("dayOverlay").classList.add("show");
@@ -566,13 +588,15 @@ function getUserAvatar(name) {
 function renderDay() {
   const data = daysData[openDate] || {};
   
+  // 备忘
   const memos = data.memos || [];
   $("memoList").innerHTML = memos.length ? memos.map(m => `
     <div class="list-item">
       <div class="meta">${getUserAvatar(m.by)}<strong>${escapeH(m.text)}</strong></div>
       <span class="kill" onclick="window.delItem('memos','${m.id}')">×</span>
-    </div>`).join("") : `<div class="empty">🦘 口袋空空，没有备忘录</div>`;
+    </div>`).join("") : `<div class="empty">🦘 没有备忘录</div>`;
 
+  // 打卡
   const punch = data.punchIn || [];
   $("punchList").innerHTML = punch.length ? punch.map(p => `
     <span style="font-size:13px;background:var(--paper);padding:4px 10px;border-radius:8px;margin-right:8px;display:inline-block;margin-bottom:8px;border:1px solid var(--line);">
@@ -584,6 +608,7 @@ function renderDay() {
   $("dAway").className = (dn && dn.home===false) ? "active red" : "";
   if(dn) $("punchList").innerHTML += `<div style="font-size:13px;color:var(--ink-soft);margin-top:6px;font-weight:bold;">${getUserAvatar(dn.by)} ${escapeH(dn.by)} 标记了: ${dn.home?"回家吃":"不回来"}</div>`;
 
+  // 消费
   const exp = data.expenses || [];
   $("expenseList").innerHTML = exp.length ? exp.map(e => {
     const cur = e.currency || "¥";
@@ -595,6 +620,25 @@ function renderDay() {
     </div>`;
   }).join("") : `<div class="empty">🦘 今天没有花钱哦</div>`;
 
+  // 吃药
+  const meds = data.medications || [];
+  $("medList").innerHTML = meds.length ? meds.map(m => `
+    <div class="list-item">
+      <span style="background:var(--med);color:#fff;padding:4px 10px;border-radius:12px;font-weight:900;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">💊 已服</span>
+      <div class="meta" style="margin-left:12px;">${m.time} · <strong>${escapeH(m.name)}</strong> <br>${getUserAvatar(m.by)} <span style="opacity:0.8">${escapeH(m.by)}</span></div>
+      <span class="kill" onclick="window.delItem('medications','${m.id}')">×</span>
+    </div>`).join("") : `<div class="empty">🦘 今天还没有吃药记录</div>`;
+
+  // 血压
+  const bps = data.bloodPressure || [];
+  $("bpList").innerHTML = bps.length ? bps.map(b => `
+    <div class="list-item">
+      <span style="background:var(--bp);color:#fff;padding:4px 10px;border-radius:12px;font-weight:900;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">${b.high}/${b.low}</span>
+      <div class="meta" style="margin-left:12px;">${b.time} <br>${getUserAvatar(b.by)} <span style="opacity:0.8">${escapeH(b.by)}</span></div>
+      <span class="kill" onclick="window.delItem('bloodPressure','${b.id}')">×</span>
+    </div>`).join("") : `<div class="empty">🦘 还没有记录血压</div>`;
+
+  // 血糖
   const glu = data.glucose || [];
   $("gluList").innerHTML = glu.length ? glu.map(g => `
     <div class="list-item">
@@ -613,12 +657,10 @@ $("dayClose").onclick = () => { $("dayOverlay").classList.remove("show"); openDa
 $("dayOverlay").onclick = e => { if(e.target === $("dayOverlay")){ $("dayOverlay").classList.remove("show"); openDate = null; } };
 
 $("mAdd").onclick = () => {
-  const txt = $("mText").value.trim();
-  if(!txt) return;
+  const txt = $("mText").value.trim(); if(!txt) return;
   const arr = (daysData[openDate]?.memos || []).slice();
   arr.push({ id:uid(), text:txt, by:myName });
-  saveDay(openDate, { memos: arr });
-  $("mText").value = "";
+  saveDay(openDate, { memos: arr }); $("mText").value = "";
 };
 
 $("dHome").onclick = () => saveDay(openDate, { dinner: { home: true, by: myName } });
@@ -639,6 +681,27 @@ $("eAdd").onclick = () => {
   $("eVal").value = ""; $("eNote").value = "";
 };
 
+// 新增吃药保存
+$("medAdd").onclick = () => {
+  const name = $("medName").value.trim();
+  if(!name) { alert("请输入药名哦🦘"); return; }
+  const arr = (daysData[openDate]?.medications || []).slice();
+  arr.push({ id:uid(), name: name, time:$("medTime").value, by:myName });
+  saveDay(openDate, { medications: arr });
+  $("medName").value = "";
+};
+
+// 新增血压保存
+$("bpAdd").onclick = () => {
+  const high = parseInt($("bpHigh").value);
+  const low = parseInt($("bpLow").value);
+  if(!(high > 0 && low > 0)) { alert("请输入完整的血压数值哦🦘"); return; }
+  const arr = (daysData[openDate]?.bloodPressure || []).slice();
+  arr.push({ id:uid(), high: high, low: low, time:$("bpTime").value, by:myName });
+  saveDay(openDate, { bloodPressure: arr });
+  $("bpHigh").value = ""; $("bpLow").value = "";
+};
+
 $("gAdd").onclick = () => {
   const v = parseFloat($("gVal").value);
   if(!(v > 0)) return;
@@ -651,7 +714,7 @@ $("gAdd").onclick = () => {
 function renderSummary() {
   $("sumTitle").innerHTML = `${view.m+1}月 口袋账单 👝`;
   let userExp = {};
-  let highCount = 0, lowCount = 0;
+  let highGluCount = 0, lowGluCount = 0;
   
   const prefix = `${view.y}-${String(view.m+1).padStart(2,"0")}`;
   for(let key in daysData) {
@@ -666,8 +729,8 @@ function renderSummary() {
       }
       if(d.glucose) {
         d.glucose.forEach(g => {
-          if(g.value > 7.8) highCount++;
-          else if(g.value < 3.9) lowCount++;
+          if(g.value > 7.8) highGluCount++;
+          else if(g.value < 3.9) lowGluCount++;
         });
       }
     }
@@ -684,12 +747,12 @@ function renderSummary() {
       ${expText}
     </div>`;
   }
-  if(highCount > 0 || lowCount > 0) {
+  if(highGluCount > 0 || lowGluCount > 0) {
     html += `<div class="sum-item">
       <div class="label">🩸 血糖偏离次数</div>
       <div class="val" style="color:var(--high); font-size:15px;">
-        ${highCount > 0 ? `偏高 ${highCount} 次<br>` : ''}
-        ${lowCount > 0 ? `<span style="color:var(--low)">偏低 ${lowCount} 次</span>` : ''}
+        ${highGluCount > 0 ? `偏高 ${highGluCount} 次<br>` : ''}
+        ${lowGluCount > 0 ? `<span style="color:var(--low)">偏低 ${lowGluCount} 次</span>` : ''}
       </div>
     </div>`;
   }
