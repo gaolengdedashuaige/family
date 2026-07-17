@@ -231,7 +231,7 @@
 
   <!-- 月度统计 -->
   <div class="summary-card">
-    <h3 id="sumTitle">本月口袋账单 👝</h3>
+    <h3 id="sumTitle">口袋汇总 👝</h3>
     <div class="sum-grid" id="summaryGrid"></div>
   </div>
 
@@ -287,7 +287,6 @@
             <option value="$">$ 美元</option>
             <option value="€">€ 欧元</option>
             <option value="£">£ 英镑</option>
-            <option value="hkd">hkd 港币</option>
           </select>
           <input id="eVal" style="flex:1.2" type="number" inputmode="decimal" placeholder="金额">
           <input id="eNote" style="flex:1.5" type="text" placeholder="买菜 / 打车">
@@ -295,7 +294,7 @@
         <button class="addbtn money" id="eAdd">＋ 记一笔开销</button>
       </div>
 
-      <!-- 4. 吃药记录 (新增) -->
+      <!-- 4. 吃药记录 -->
       <div class="sec">
         <h4>💊 吃药打卡</h4>
         <div id="medList"></div>
@@ -306,7 +305,7 @@
         <button class="addbtn med" id="medAdd">＋ 记录吃药</button>
       </div>
 
-      <!-- 5. 血压记录 (新增) -->
+      <!-- 5. 血压记录 -->
       <div class="sec">
         <h4>🫀 血压记录</h4>
         <div id="bpList"></div>
@@ -345,7 +344,7 @@ import { getFirestore, collection, doc, onSnapshot, setDoc } from "https://www.g
 /* ============================================
    在这里修改密码！
    ============================================ */
-const PASSWORD = "zp610852";
+const PASSWORD = "123";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD1BmiAgK50Y2RgkDBdw1gU9HcAqeTQUm8",
@@ -546,7 +545,6 @@ function renderGrid() {
     
     let html = `<div class="d">${d}</div><div class="tags">`;
     
-    // 微缩标签
     if(data.memos && data.memos.length) html += `<span class="tag memo">事</span>`;
     if(data.medications && data.medications.length) html += `<span class="tag med">💊</span>`;
     if(data.bloodPressure && data.bloodPressure.length) html += `<span class="tag bp">🫀</span>`;
@@ -570,7 +568,6 @@ function openDay(y, m, d) {
   $("dayTitle").textContent = `${m+1}月${d}日`;
   $("dayWeekday").textContent = WD[new Date(y, m, d).getDay()];
   
-  // 清空表单
   $("gVal").value=""; $("gNote").value=""; $("gTime").value=getHHMM(); $("gSlot").selectedIndex=0;
   $("eVal").value=""; $("eNote").value="";
   $("mText").value="";
@@ -589,7 +586,6 @@ function getUserAvatar(name) {
 function renderDay() {
   const data = daysData[openDate] || {};
   
-  // 备忘
   const memos = data.memos || [];
   $("memoList").innerHTML = memos.length ? memos.map(m => `
     <div class="list-item">
@@ -597,7 +593,6 @@ function renderDay() {
       <span class="kill" onclick="window.delItem('memos','${m.id}')">×</span>
     </div>`).join("") : `<div class="empty">🦘 没有备忘录</div>`;
 
-  // 打卡
   const punch = data.punchIn || [];
   $("punchList").innerHTML = punch.length ? punch.map(p => `
     <span style="font-size:13px;background:var(--paper);padding:4px 10px;border-radius:8px;margin-right:8px;display:inline-block;margin-bottom:8px;border:1px solid var(--line);">
@@ -609,7 +604,6 @@ function renderDay() {
   $("dAway").className = (dn && dn.home===false) ? "active red" : "";
   if(dn) $("punchList").innerHTML += `<div style="font-size:13px;color:var(--ink-soft);margin-top:6px;font-weight:bold;">${getUserAvatar(dn.by)} ${escapeH(dn.by)} 标记了: ${dn.home?"回家吃":"不回来"}</div>`;
 
-  // 消费
   const exp = data.expenses || [];
   $("expenseList").innerHTML = exp.length ? exp.map(e => {
     const cur = e.currency || "¥";
@@ -621,7 +615,6 @@ function renderDay() {
     </div>`;
   }).join("") : `<div class="empty">🦘 今天没有花钱哦</div>`;
 
-  // 吃药
   const meds = data.medications || [];
   $("medList").innerHTML = meds.length ? meds.map(m => `
     <div class="list-item">
@@ -630,7 +623,6 @@ function renderDay() {
       <span class="kill" onclick="window.delItem('medications','${m.id}')">×</span>
     </div>`).join("") : `<div class="empty">🦘 今天还没有吃药记录</div>`;
 
-  // 血压
   const bps = data.bloodPressure || [];
   $("bpList").innerHTML = bps.length ? bps.map(b => `
     <div class="list-item">
@@ -639,7 +631,6 @@ function renderDay() {
       <span class="kill" onclick="window.delItem('bloodPressure','${b.id}')">×</span>
     </div>`).join("") : `<div class="empty">🦘 还没有记录血压</div>`;
 
-  // 血糖
   const glu = data.glucose || [];
   $("gluList").innerHTML = glu.length ? glu.map(g => `
     <div class="list-item">
@@ -682,7 +673,6 @@ $("eAdd").onclick = () => {
   $("eVal").value = ""; $("eNote").value = "";
 };
 
-// 新增吃药保存
 $("medAdd").onclick = () => {
   const name = $("medName").value.trim();
   if(!name) { alert("请输入药名哦🦘"); return; }
@@ -692,7 +682,6 @@ $("medAdd").onclick = () => {
   $("medName").value = "";
 };
 
-// 新增血压保存
 $("bpAdd").onclick = () => {
   const high = parseInt($("bpHigh").value);
   const low = parseInt($("bpLow").value);
@@ -713,14 +702,19 @@ $("gAdd").onclick = () => {
 };
 
 function renderSummary() {
-  $("sumTitle").innerHTML = `${view.m+1}月 口袋账单 👝`;
+  $("sumTitle").innerHTML = `${view.m+1}月 汇总 👝`;
+  
   let userExp = {};
   let highGluCount = 0, lowGluCount = 0;
+  let highBpCount = 0, lowBpCount = 0;
+  let medCount = 0;
   
   const prefix = `${view.y}-${String(view.m+1).padStart(2,"0")}`;
   for(let key in daysData) {
     if(key.startsWith(prefix)) {
       const d = daysData[key];
+      
+      // 消费
       if(d.expenses) {
         d.expenses.forEach(e => {
           const cur = e.currency || "¥";
@@ -728,16 +722,30 @@ function renderSummary() {
           userExp[e.by][cur] = (userExp[e.by][cur] || 0) + e.amount;
         });
       }
+      // 血糖
       if(d.glucose) {
         d.glucose.forEach(g => {
           if(g.value > 7.8) highGluCount++;
           else if(g.value < 3.9) lowGluCount++;
         });
       }
+      // 血压
+      if(d.bloodPressure) {
+        d.bloodPressure.forEach(b => {
+          if(b.high >= 140 || b.low >= 90) highBpCount++;
+          else if(b.high < 90 || b.low < 60) lowBpCount++;
+        });
+      }
+      // 吃药
+      if(d.medications) {
+        medCount += d.medications.length;
+      }
     }
   }
   
   let html = "";
+  
+  // 1. 渲染消费
   for(let user in userExp) {
     let expText = "";
     for(let cur in userExp[user]) {
@@ -748,6 +756,27 @@ function renderSummary() {
       ${expText}
     </div>`;
   }
+  
+  // 2. 渲染吃药
+  if(medCount > 0) {
+    html += `<div class="sum-item">
+      <div class="label">💊 本月吃药打卡</div>
+      <div class="val" style="color:var(--med); font-size:18px;">共 ${medCount} 次</div>
+    </div>`;
+  }
+  
+  // 3. 渲染血压异常
+  if(highBpCount > 0 || lowBpCount > 0) {
+    html += `<div class="sum-item">
+      <div class="label">🫀 血压偏离次数</div>
+      <div class="val" style="color:var(--bp); font-size:15px;">
+        ${highBpCount > 0 ? `偏高 ${highBpCount} 次<br>` : ''}
+        ${lowBpCount > 0 ? `<span style="color:var(--low)">偏低 ${lowBpCount} 次</span>` : ''}
+      </div>
+    </div>`;
+  }
+  
+  // 4. 渲染血糖异常
   if(highGluCount > 0 || lowGluCount > 0) {
     html += `<div class="sum-item">
       <div class="label">🩸 血糖偏离次数</div>
