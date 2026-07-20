@@ -3,32 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>袋鼠家庭日历 🦘</title>
+<title>动物大家庭日历 🦘🐶🐱</title>
+<!-- 引入腾讯云开发 Web SDK -->
+<script src="https://imgcache.qq.com/qcloud/cloudbase-js-sdk/2.8.0/cloudbase.full.js"></script>
 <style>
   :root {
-    /* 更加温暖、可爱的袋鼠奶橘配色 */
-    --paper: #FFF7F0;       /* 背景色：奶橘色 */
-    --card: #FFFFFF;        /* 卡片背景 */
-    --ink: #5C4B40;         /* 字体颜色：温柔的深棕色 */
-    --ink-soft: #A38C7D;    /* 辅助字色：浅棕色 */
-    --line: #F5E1D4;        /* 边框：浅桃色 */
-    --line-strong: #E6CBB8; /* 强边框 */
+    --paper: #FFF7F0;       
+    --card: #FFFFFF;        
+    --ink: #5C4B40;         
+    --ink-soft: #A38C7D;    
+    --line: #F5E1D4;        
+    --line-strong: #E6CBB8; 
     
-    /* 功能色 */
-    --primary: #FF8E5E;     /* 主色调：可爱的橘红（替代原来的深绿） */
-    --home: #5EC9A1;        /* 回家：薄荷绿 */
-    --away: #FF7B7B;        /* 不回家：草莓红 */
-    --money: #FFAA33;       /* 金钱：芒果黄 */
-    --shout: #52B5F7;       /* 喊话：天空蓝 */
-    --med: #A366FF;         /* 吃药：香芋紫 */
-    --bp: #FF6B8B;          /* 血压：西瓜红 */
+    --primary: #FF8E5E;     
+    --home: #5EC9A1;        
+    --away: #FF7B7B;        
+    --money: #FFAA33;       
+    --shout: #52B5F7;       
+    --med: #A366FF;         
+    --bp: #FF6B8B;          
     
     --low: #52B5F7;         
     --normal: #5EC9A1;      
     --high: #FF7B7B;        
     
     --shadow: 0 4px 14px rgba(255, 142, 94, 0.1), 0 10px 28px rgba(92, 75, 64, 0.05); 
-    --r: 20px; /* 更圆润的圆角 */
+    --r: 20px; 
   }
   
   *{box-sizing:border-box;}
@@ -37,9 +37,8 @@
   .wrap{max-width:900px;margin:0 auto;position:relative;}
   .hidden{display:none!important;}
 
-  /* 登录页 & 头像上传 */
   .login{max-width:360px;margin:8vh auto 0;background:var(--card);border:2px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:36px 26px;text-align:center;}
-  .login .icon{font-size:48px;margin-bottom:10px;animation:bounce 2s infinite;}
+  .login .icon{font-size:48px;margin-bottom:10px;animation:bounce 2s infinite;display:flex;justify-content:center;gap:8px;}
   .avatar-upload{width:86px;height:86px;border-radius:50%;background:var(--paper);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;border:3px dashed var(--primary);transition:0.2s;}
   .avatar-upload:hover{transform:scale(1.05);}
   .avatar-upload img{width:100%;height:100%;object-fit:cover;}
@@ -51,18 +50,16 @@
   .login button{width:100%;padding:14px;border:none;border-radius:14px;background:var(--primary);color:#fff;font-size:16px;font-weight:800;cursor:pointer;margin-top:6px;box-shadow:0 4px 12px rgba(255, 142, 94, 0.3);}
   .login .err{color:var(--away);font-size:13px;min-height:18px;margin-top:10px;}
 
-  /* 顶部导航 */
   .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
   .user-badge{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;color:var(--primary);background:var(--card);padding:4px 12px 4px 4px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
   .user-badge img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--primary);}
   .top .out{border:none;background:var(--line);color:var(--ink-soft);border-radius:999px;padding:8px 16px;font-size:13px;cursor:pointer;font-weight:800;}
   
   .brand{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
-  .brand .logo{width:52px;height:52px;border-radius:18px;background:linear-gradient(135deg, #FFAD80, var(--primary));display:grid;place-items:center;font-size:28px;box-shadow:0 4px 12px rgba(255, 142, 94, 0.3);}
+  .brand .logo{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg, #FFAD80, var(--primary));display:grid;place-items:center;font-size:26px;box-shadow:0 4px 12px rgba(255, 142, 94, 0.3);}
   .brand h1{font-size:22px;margin:0;font-weight:800;color:var(--ink);}
   .brand .sub{font-size:12px;letter-spacing:1px;color:var(--ink-soft);text-transform:uppercase;font-weight:bold;}
 
-  /* 图例 & 日历控制 */
   .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--ink-soft);margin-bottom:16px;align-items:center;background:var(--card);padding:10px 14px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,0.03);}
   .legend span{display:inline-flex;align-items:center;gap:4px;font-weight:600;}
   .swatch{width:12px;height:12px;border-radius:50%;display:inline-block;}
@@ -73,7 +70,6 @@
   .monthbar .title{font-size:22px;font-weight:900;color:var(--ink);}
   .monthbar .today-link{font-size:13px;color:var(--primary);cursor:pointer;margin-top:4px;font-weight:bold;}
 
-  /* 日历网格 */
   .cal{background:var(--card);border:2px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:10px;}
   .weekrow{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;padding:6px 0 10px;color:var(--ink-soft);font-size:13px;font-weight:800;border-bottom:2px dashed var(--line);}
   .grid{display:grid;grid-template-columns:repeat(7,1fr);}
@@ -85,7 +81,6 @@
   .cell.today{box-shadow:inset 0 0 0 3px var(--primary);border-radius:12px;}
   .cell.today .d{color:var(--primary);font-weight:900;font-size:16px;}
   
-  /* 单元格内的微缩标记 */
   .tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;}
   .tag{font-size:10px;padding:2px 5px;border-radius:6px;color:#fff;font-weight:bold;}
   .tag.glu{background:var(--primary);}
@@ -97,7 +92,6 @@
   
   @media(max-width:560px){.cell{min-height:76px;}}
 
-  /* 底部统计面板 & 喊话板 */
   .summary-card, .shout-card{margin-top:24px;background:var(--card);border:2px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);}
   .summary-card h3, .shout-card h3{margin:0 0 16px;font-size:17px;font-weight:900;display:flex;align-items:center;gap:8px;color:var(--ink);}
   .sum-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:14px;}
@@ -105,7 +99,6 @@
   .sum-item .label{font-size:12px;color:var(--ink-soft);margin-bottom:6px;font-weight:bold;}
   .sum-item .val{font-size:20px;font-weight:900;color:var(--ink);}
 
-  /* 喊话板专有样式 */
   .shout-list{max-height:260px;overflow-y:auto;padding-right:6px;margin-bottom:16px;display:flex;flex-direction:column;gap:14px;}
   .shout-item{display:flex;gap:10px;align-items:flex-end;}
   .shout-item img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--line-strong);flex-shrink:0;}
@@ -119,7 +112,6 @@
   .shout-input-box input:focus{outline:none;}
   .shout-input-box button{background:var(--shout);color:#fff;border:none;padding:0 20px;border-radius:12px;font-weight:800;cursor:pointer;box-shadow:0 2px 8px rgba(82, 181, 247, 0.4);}
 
-  /* 弹窗设计 */
   .overlay{position:fixed;inset:0;background:rgba(92, 75, 64, 0.6);display:none;align-items:flex-end;justify-content:center;z-index:50;}
   .overlay.show{display:flex;}
   .modal{background:var(--paper);border-radius:24px 24px 0 0;width:100%;max-width:500px;max-height:92vh;display:flex;flex-direction:column;animation:slideUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
@@ -160,23 +152,22 @@
   .addbtn.med{background:var(--med);box-shadow:0 4px 12px rgba(163, 102, 255, 0.3);}
   .addbtn.bp{background:var(--bp);box-shadow:0 4px 12px rgba(255, 107, 139, 0.3);}
 
-  /* 右下角跳动的装饰小袋鼠 */
-  .deco-kangaroo{position:fixed;bottom:20px;right:20px;font-size:42px;animation:bounce 2.5s infinite;z-index:10;pointer-events:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));}
+  /* 右下角跳动的装饰小动物们 */
+  .deco-animals{position:fixed;bottom:20px;right:20px;font-size:38px;animation:bounce 2.5s infinite;z-index:10;pointer-events:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));display:flex;gap:8px;}
   @keyframes bounce{
     0%, 20%, 50%, 80%, 100%{transform:translateY(0);}
     40%{transform:translateY(-20px) rotate(-5deg);}
     60%{transform:translateY(-10px) rotate(5deg);}
   }
-  @media(max-width:768px){ .deco-kangaroo{font-size:36px;bottom:10px;right:10px;} }
+  @media(max-width:768px){ .deco-animals{font-size:32px;bottom:10px;right:10px;} }
 </style>
 </head>
 <body>
 
-<!-- 登录页 -->
 <div id="loginScreen" class="login">
-  <div class="icon">🦘</div>
-  <h1>袋鼠家庭日历</h1>
-  <p>跳进我们的专属小口袋</p>
+  <div class="icon">🦘 🐶 🐱</div>
+  <h1>动物大家庭日历</h1>
+  <p>袋鼠、狗狗和猫猫的温馨小窝</p>
   
   <label for="avatarInput">
     <div class="avatar-upload" id="avatarPreview">
@@ -191,9 +182,8 @@
   <div class="err" id="loginErr"></div>
 </div>
 
-<!-- 主界面 -->
 <div id="appScreen" class="wrap hidden">
-  <div class="deco-kangaroo">🦘</div>
+  <div class="deco-animals">🦘 🐶 🐱</div>
 
   <div class="top">
     <div class="user-badge" id="whoami"></div>
@@ -202,7 +192,7 @@
   
   <div class="brand">
     <div class="logo">🦘</div>
-    <div><h1>袋鼠家庭口袋</h1><div class="sub">Kangaroo Family</div></div>
+    <div><h1>动物大家庭口袋</h1><div class="sub">Animal Family</div></div>
   </div>
 
   <div class="legend">
@@ -229,24 +219,21 @@
     <div class="grid" id="grid"></div>
   </div>
 
-  <!-- 月度统计 -->
   <div class="summary-card">
     <h3 id="sumTitle">口袋汇总 👝</h3>
     <div class="sum-grid" id="summaryGrid"></div>
   </div>
 
-  <!-- 家庭喊话板 -->
   <div class="shout-card">
-    <h3>📢 袋鼠大喇叭</h3>
+    <h3>📢 家庭大喇叭</h3>
     <div class="shout-list" id="shoutList"></div>
     <div class="shout-input-box">
-      <input id="shoutInput" type="text" placeholder="想对全家人喊点什么？" autocomplete="off">
+      <input id="shoutInput" type="text" placeholder="想对全家喊点什么？" autocomplete="off">
       <button id="shoutBtn">发送</button>
     </div>
   </div>
 </div>
 
-<!-- 每日详情弹窗 -->
 <div class="overlay" id="dayOverlay">
   <div class="modal">
     <div class="head">
@@ -255,17 +242,15 @@
     </div>
     <div class="body">
       
-      <!-- 1. 备忘录 -->
       <div class="sec">
         <h4>📝 备忘录与行程</h4>
         <div id="memoList"></div>
         <div class="row" style="margin-top:12px;">
-          <input id="mText" style="flex:3" type="text" placeholder="比如：带妈妈复查">
+          <input id="mText" style="flex:3" type="text" placeholder="比如：带妈妈复查 / 买罐头">
           <button class="addbtn memo" style="flex:1; margin-top:0;" id="mAdd">记下</button>
         </div>
       </div>
       
-      <!-- 2. 到家与吃饭 -->
       <div class="sec">
         <h4>🏠 吃饭与打卡</h4>
         <div id="punchList" style="margin-bottom:12px;"></div>
@@ -276,7 +261,6 @@
         </div>
       </div>
       
-      <!-- 3. 消费账单 -->
       <div class="sec">
         <h4>💰 口袋开销</h4>
         <div id="expenseList"></div>
@@ -294,7 +278,6 @@
         <button class="addbtn money" id="eAdd">＋ 记一笔开销</button>
       </div>
 
-      <!-- 4. 吃药记录 -->
       <div class="sec">
         <h4>💊 吃药打卡</h4>
         <div id="medList"></div>
@@ -305,7 +288,6 @@
         <button class="addbtn med" id="medAdd">＋ 记录吃药</button>
       </div>
 
-      <!-- 5. 血压记录 -->
       <div class="sec">
         <h4>🫀 血压记录</h4>
         <div id="bpList"></div>
@@ -317,7 +299,6 @@
         <button class="addbtn bp" id="bpAdd">＋ 记一条血压</button>
       </div>
       
-      <!-- 6. 血糖记录 -->
       <div class="sec" style="margin-bottom:0;">
         <h4>🩸 血糖记录</h4>
         <div id="gluList"></div>
@@ -336,38 +317,28 @@
   </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-import { getFirestore, collection, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-
+<script>
 /* ============================================
-   在这里修改密码！
+   腾讯云数据库配置区域
    ============================================ */
-const PASSWORD = "123";
+const TCB_ENV_ID = "family-d8gl3dfpp91110def-1455992626";
+const PASSWORD = "zp610852";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD1BmiAgK50Y2RgkDBdw1gU9HcAqeTQUm8",
-  authDomain: "we-are-family-84576.firebaseapp.com",
-  projectId: "we-are-family-84576",
-  storageBucket: "we-are-family-84576.firebasestorage.app",
-  messagingSenderId: "513893427423",
-  appId: "1:513893427423:web:64080b7e85988039f0e16a"
-};
+// 初始化腾讯云开发
+const app = cloudbase.init({
+  env: TCB_ENV_ID
+});
+const auth = app.auth({ persistence: "local" });
+const db = app.database();
 
 const $ = id => document.getElementById(id);
 const WD = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 
 let view = { y: new Date().getFullYear(), m: new Date().getMonth() };
 let daysData = {};
 let usersData = {}; 
 let unsubDays = null, unsubUsers = null, unsubShouts = null;
 let openDate = null;
-let unlocked = false;
 let authReady = false;
 let autoScrollShouts = true; 
 
@@ -405,27 +376,30 @@ $("avatarInput").onchange = (e) => {
   reader.readAsDataURL(file);
 };
 
-signInAnonymously(auth).catch(e => console.error("Auth Error:", e));
-onAuthStateChanged(auth, user => { 
-  authReady = !!user; 
-  if(localStorage.getItem("familyUnlocked") === "1" && authReady) enter(); 
-});
-
+// 登录验证逻辑
 $("loginBtn").onclick = async () => {
-  $("loginErr").textContent = "";
-  if($("password").value !== PASSWORD) { $("loginErr").textContent = "密码不对哦，袋鼠进不去！"; return; }
+  $("loginErr").textContent = "正在呼唤小动物们...";
+  if($("password").value !== PASSWORD) { $("loginErr").textContent = "密码不对哦！"; return; }
   myName = $("who").value.trim() || "家人";
   
-  localStorage.setItem("familyName", myName);
-  localStorage.setItem("familyUnlocked", "1");
-  if(myAvatar) localStorage.setItem("familyAvatar", myAvatar);
-  
-  if(authReady) enter();
-  else $("loginErr").textContent = "正在连接网络，小袋鼠努力中...";
+  try {
+    await auth.anonymousAuthProvider().signIn();
+    localStorage.setItem("familyName", myName);
+    localStorage.setItem("familyUnlocked", "1");
+    if(myAvatar) localStorage.setItem("familyAvatar", myAvatar);
+    enter();
+  } catch(e) {
+    console.error("Auth error:", e);
+    $("loginErr").textContent = "网络开小差了，请稍后再试";
+  }
 };
 
 $("password").addEventListener("keydown",e=>{ if(e.key==="Enter") $("loginBtn").click(); });
 $("logoutBtn").onclick = () => { localStorage.clear(); location.reload(); };
+
+if(localStorage.getItem("familyUnlocked") === "1") {
+  auth.anonymousAuthProvider().signIn().then(() => enter()).catch(e => console.error(e));
+}
 
 function enter() {
   $("loginScreen").classList.add("hidden");
@@ -437,43 +411,46 @@ function enter() {
   badgeHtml += `<span>${myName}</span>`;
   $("whoami").innerHTML = badgeHtml;
   
-  if(myName) {
-    setDoc(doc(db, "users", myName), { avatar: myAvatar }, { merge: true }).catch(e=>console.log(e));
-  }
+  if(myName) saveUserAvatar(myName, myAvatar);
   listen();
 }
 
+async function saveUserAvatar(name, avatarData) {
+  try { await db.collection("users").doc(name).update({ avatar: avatarData }); }
+  catch(e) { await db.collection("users").doc(name).set({ avatar: avatarData }); }
+}
+
 function listen() {
-  if(unsubDays) unsubDays();
-  if(unsubUsers) unsubUsers();
-  if(unsubShouts) unsubShouts();
+  if(unsubDays) unsubDays.close();
+  if(unsubUsers) unsubUsers.close();
+  if(unsubShouts) unsubShouts.close();
   
-  unsubDays = onSnapshot(collection(db, "days"), snap => {
-    daysData = {};
-    snap.forEach(d => daysData[d.id] = d.data());
-    renderGrid();
-    renderSummary();
-    if(openDate) renderDay();
+  unsubDays = db.collection("days").watch({
+    onChange: snapshot => {
+      daysData = {};
+      snapshot.docs.forEach(d => daysData[d._id] = d);
+      renderGrid(); renderSummary(); if(openDate) renderDay();
+    },
+    onError: err => console.error("Days watch error", err)
   });
 
-  unsubUsers = onSnapshot(collection(db, "users"), snap => {
-    usersData = {};
-    snap.forEach(d => usersData[d.id] = d.data());
-    if(openDate) renderDay();
-    renderShouts(); 
+  unsubUsers = db.collection("users").watch({
+    onChange: snapshot => {
+      usersData = {};
+      snapshot.docs.forEach(d => usersData[d._id] = d);
+      if(openDate) renderDay(); renderShouts(); 
+    },
+    onError: err => console.error("Users watch error", err)
   });
 
-  let shoutsData = [];
-  unsubShouts = onSnapshot(collection(db, "shouts"), snap => {
-    shoutsData = [];
-    snap.forEach(d => {
-      let st = d.data();
-      st.id = d.id;
-      shoutsData.push(st);
-    });
-    shoutsData.sort((a,b) => a.timestamp - b.timestamp);
-    if(shoutsData.length > 50) shoutsData = shoutsData.slice(-50);
-    renderShouts(shoutsData);
+  unsubShouts = db.collection("shouts").watch({
+    onChange: snapshot => {
+      let shoutsData = [...snapshot.docs];
+      shoutsData.sort((a,b) => a.timestamp - b.timestamp);
+      if(shoutsData.length > 50) shoutsData = shoutsData.slice(-50);
+      renderShouts(shoutsData);
+    },
+    onError: err => console.error("Shouts watch error", err)
   });
 }
 
@@ -486,7 +463,7 @@ function renderShouts(dataArr = null) {
   const box = $("shoutList");
   const isScrolledToBottom = box.scrollHeight - box.clientHeight <= box.scrollTop + 10;
   if (dataArr.length === 0) {
-    box.innerHTML = `<div class="empty">🦘 袋鼠口袋空空的，来喊第一句吧！</div>`; return;
+    box.innerHTML = `<div class="empty">🦘🐶🐱 口袋空空的，来喊第一句吧！</div>`; return;
   }
   box.innerHTML = dataArr.map(s => {
     const isMe = s.by === myName;
@@ -510,14 +487,14 @@ $("shoutBtn").onclick = async () => {
   const n = new Date();
   const timeStr = `${n.getMonth()+1}/${n.getDate()} ${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;
   try {
-    await setDoc(doc(db, "shouts", uid()), { text, by: myName, timeStr, timestamp: Date.now() });
-  } catch(e) { alert("发送失败了，请检查网络"); }
+    await db.collection("shouts").add({ text, by: myName, timeStr, timestamp: Date.now() });
+  } catch(e) { alert("发送失败了，请检查网络权限"); }
 };
 $("shoutInput").addEventListener("keydown",e=>{ if(e.key==="Enter") $("shoutBtn").click(); });
 
 async function saveDay(key, patch) {
-  try { await setDoc(doc(db,"days",key), patch, {merge:true}); }
-  catch(e) { alert("保存失败，请检查网络"); }
+  try { await db.collection("days").doc(key).update(patch); } 
+  catch(e) { await db.collection("days").doc(key).set(patch); }
 }
 
 $("prevM").onclick=()=>{ view.m--; if(view.m<0){view.m=11;view.y--;} renderGrid(); renderSummary(); };
@@ -591,7 +568,7 @@ function renderDay() {
     <div class="list-item">
       <div class="meta">${getUserAvatar(m.by)}<strong>${escapeH(m.text)}</strong></div>
       <span class="kill" onclick="window.delItem('memos','${m.id}')">×</span>
-    </div>`).join("") : `<div class="empty">🦘 没有备忘录</div>`;
+    </div>`).join("") : `<div class="empty">没有备忘录哦</div>`;
 
   const punch = data.punchIn || [];
   $("punchList").innerHTML = punch.length ? punch.map(p => `
@@ -613,7 +590,7 @@ function renderDay() {
       <div class="meta" style="margin-left:12px;">${getUserAvatar(e.by)} ${escapeH(e.note)}</div>
       <span class="kill" onclick="window.delItem('expenses','${e.id}')">×</span>
     </div>`;
-  }).join("") : `<div class="empty">🦘 今天没有花钱哦</div>`;
+  }).join("") : `<div class="empty">今天没有花钱哦</div>`;
 
   const meds = data.medications || [];
   $("medList").innerHTML = meds.length ? meds.map(m => `
@@ -621,7 +598,7 @@ function renderDay() {
       <span style="background:var(--med);color:#fff;padding:4px 10px;border-radius:12px;font-weight:900;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">💊 已服</span>
       <div class="meta" style="margin-left:12px;">${m.time} · <strong>${escapeH(m.name)}</strong> <br>${getUserAvatar(m.by)} <span style="opacity:0.8">${escapeH(m.by)}</span></div>
       <span class="kill" onclick="window.delItem('medications','${m.id}')">×</span>
-    </div>`).join("") : `<div class="empty">🦘 今天还没有吃药记录</div>`;
+    </div>`).join("") : `<div class="empty">今天还没有吃药记录</div>`;
 
   const bps = data.bloodPressure || [];
   $("bpList").innerHTML = bps.length ? bps.map(b => `
@@ -629,7 +606,7 @@ function renderDay() {
       <span style="background:var(--bp);color:#fff;padding:4px 10px;border-radius:12px;font-weight:900;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">${b.high}/${b.low}</span>
       <div class="meta" style="margin-left:12px;">${b.time} <br>${getUserAvatar(b.by)} <span style="opacity:0.8">${escapeH(b.by)}</span></div>
       <span class="kill" onclick="window.delItem('bloodPressure','${b.id}')">×</span>
-    </div>`).join("") : `<div class="empty">🦘 还没有记录血压</div>`;
+    </div>`).join("") : `<div class="empty">还没有记录血压</div>`;
 
   const glu = data.glucose || [];
   $("gluList").innerHTML = glu.length ? glu.map(g => `
@@ -637,7 +614,7 @@ function renderDay() {
       <span style="background:${gluColor(g.value)};color:#fff;padding:4px 10px;border-radius:12px;font-weight:900;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">${g.value}</span>
       <div class="meta" style="margin-left:12px;">${g.slot} · ${g.time} ${g.note?"· "+escapeH(g.note):""} <br>${getUserAvatar(g.by)} <span style="opacity:0.8">${escapeH(g.by)}</span></div>
       <span class="kill" onclick="window.delItem('glucose','${g.id}')">×</span>
-    </div>`).join("") : `<div class="empty">🦘 还没有记录血糖</div>`;
+    </div>`).join("") : `<div class="empty">还没有记录血糖</div>`;
 }
 
 window.delItem = (field, id) => {
@@ -665,7 +642,7 @@ $("pAdd").onclick = () => {
 
 $("eAdd").onclick = () => {
   const v = parseFloat($("eVal").value);
-  if(!(v > 0)) { alert("请输入有效金额哦🦘"); return; }
+  if(!(v > 0)) { alert("请输入有效金额哦"); return; }
   const cur = $("eCur").value;
   const arr = (daysData[openDate]?.expenses || []).slice();
   arr.push({ id:uid(), amount: v, currency: cur, note:$("eNote").value.trim()||"日常开支", by:myName });
@@ -675,7 +652,7 @@ $("eAdd").onclick = () => {
 
 $("medAdd").onclick = () => {
   const name = $("medName").value.trim();
-  if(!name) { alert("请输入药名哦🦘"); return; }
+  if(!name) { alert("请输入药名哦"); return; }
   const arr = (daysData[openDate]?.medications || []).slice();
   arr.push({ id:uid(), name: name, time:$("medTime").value, by:myName });
   saveDay(openDate, { medications: arr });
@@ -685,7 +662,7 @@ $("medAdd").onclick = () => {
 $("bpAdd").onclick = () => {
   const high = parseInt($("bpHigh").value);
   const low = parseInt($("bpLow").value);
-  if(!(high > 0 && low > 0)) { alert("请输入完整的血压数值哦🦘"); return; }
+  if(!(high > 0 && low > 0)) { alert("请输入完整的血压数值哦"); return; }
   const arr = (daysData[openDate]?.bloodPressure || []).slice();
   arr.push({ id:uid(), high: high, low: low, time:$("bpTime").value, by:myName });
   saveDay(openDate, { bloodPressure: arr });
@@ -714,7 +691,6 @@ function renderSummary() {
     if(key.startsWith(prefix)) {
       const d = daysData[key];
       
-      // 消费
       if(d.expenses) {
         d.expenses.forEach(e => {
           const cur = e.currency || "¥";
@@ -722,21 +698,18 @@ function renderSummary() {
           userExp[e.by][cur] = (userExp[e.by][cur] || 0) + e.amount;
         });
       }
-      // 血糖
       if(d.glucose) {
         d.glucose.forEach(g => {
           if(g.value > 7.8) highGluCount++;
           else if(g.value < 3.9) lowGluCount++;
         });
       }
-      // 血压
       if(d.bloodPressure) {
         d.bloodPressure.forEach(b => {
           if(b.high >= 140 || b.low >= 90) highBpCount++;
           else if(b.high < 90 || b.low < 60) lowBpCount++;
         });
       }
-      // 吃药
       if(d.medications) {
         medCount += d.medications.length;
       }
@@ -745,7 +718,6 @@ function renderSummary() {
   
   let html = "";
   
-  // 1. 渲染消费
   for(let user in userExp) {
     let expText = "";
     for(let cur in userExp[user]) {
@@ -757,7 +729,6 @@ function renderSummary() {
     </div>`;
   }
   
-  // 2. 渲染吃药
   if(medCount > 0) {
     html += `<div class="sum-item">
       <div class="label">💊 本月吃药打卡</div>
@@ -765,7 +736,6 @@ function renderSummary() {
     </div>`;
   }
   
-  // 3. 渲染血压异常
   if(highBpCount > 0 || lowBpCount > 0) {
     html += `<div class="sum-item">
       <div class="label">🫀 血压偏离次数</div>
@@ -776,7 +746,6 @@ function renderSummary() {
     </div>`;
   }
   
-  // 4. 渲染血糖异常
   if(highGluCount > 0 || lowGluCount > 0) {
     html += `<div class="sum-item">
       <div class="label">🩸 血糖偏离次数</div>
@@ -787,7 +756,7 @@ function renderSummary() {
     </div>`;
   }
   
-  if(!html) html = `<div style="font-size:14px;color:var(--ink-soft);grid-column:1/-1;text-align:center;padding:10px;">🦘 本月口袋还没有进出记录哦。</div>`;
+  if(!html) html = `<div style="font-size:14px;color:var(--ink-soft);grid-column:1/-1;text-align:center;padding:10px;">本月口袋还没有进出记录哦。</div>`;
   $("summaryGrid").innerHTML = html;
 }
 </script>
