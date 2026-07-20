@@ -4,83 +4,56 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>动物大家庭日历 🦘🐶🐱</title>
-<!-- 引入腾讯云开发 Web SDK -->
-<script src="https://imgcache.qq.com/qcloud/cloudbase-js-sdk/2.8.0/cloudbase.full.js"></script>
 <style>
   :root {
-    --paper: #FFF7F0;       
-    --card: #FFFFFF;        
-    --ink: #5C4B40;         
-    --ink-soft: #A38C7D;    
-    --line: #F5E1D4;        
-    --line-strong: #E6CBB8; 
-    
-    --primary: #FF8E5E;     
-    --home: #5EC9A1;        
-    --away: #FF7B7B;        
-    --money: #FFAA33;       
-    --shout: #52B5F7;       
-    --med: #A366FF;         
-    --bp: #FF6B8B;          
-    
-    --low: #52B5F7;         
-    --normal: #5EC9A1;      
-    --high: #FF7B7B;        
-    
-    --shadow: 0 4px 14px rgba(255, 142, 94, 0.1), 0 10px 28px rgba(92, 75, 64, 0.05); 
-    --r: 20px; 
+    --paper: #FFF7F0; --card: #FFFFFF; --ink: #5C4B40; --ink-soft: #A38C7D;
+    --line: #F5E1D4; --line-strong: #E6CBB8; --primary: #FF8E5E;
+    --home: #5EC9A1; --away: #FF7B7B; --money: #FFAA33; --shout: #52B5F7;
+    --med: #A366FF; --bp: #FF6B8B; --low: #52B5F7; --normal: #5EC9A1; --high: #FF7B7B;
+    --shadow: 0 4px 14px rgba(255, 142, 94, 0.1), 0 10px 28px rgba(92, 75, 64, 0.05); --r: 20px;
   }
-  
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
-  body{background:var(--paper);color:var(--ink);font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;padding:16px 12px 90px;}
+  body{background:var(--paper);color:var(--ink);font-family:"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.5;padding:16px 12px 90px;}
   .wrap{max-width:900px;margin:0 auto;position:relative;}
   .hidden{display:none!important;}
-
   .login{max-width:360px;margin:8vh auto 0;background:var(--card);border:2px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:36px 26px;text-align:center;}
-  .login .icon{font-size:48px;margin-bottom:10px;animation:bounce 2s infinite;display:flex;justify-content:center;gap:8px;}
-  .avatar-upload{width:86px;height:86px;border-radius:50%;background:var(--paper);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;border:3px dashed var(--primary);transition:0.2s;}
-  .avatar-upload:hover{transform:scale(1.05);}
+  .login .icon{font-size:48px;margin-bottom:10px;display:flex;justify-content:center;gap:8px;}
+  .avatar-upload{width:86px;height:86px;border-radius:50%;background:var(--paper);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;border:3px dashed var(--primary);}
   .avatar-upload img{width:100%;height:100%;object-fit:cover;}
   .avatar-upload span{font-size:12px;color:var(--primary);position:absolute;font-weight:bold;}
   .login h1{font-size:24px;margin:8px 0 2px;color:var(--primary);}
   .login p{color:var(--ink-soft);font-size:13px;margin:0 0 24px;}
   .login input{width:100%;padding:14px;border:2px solid var(--line);border-radius:14px;font-size:16px;margin-bottom:12px;background:var(--paper);font-family:inherit;color:var(--ink);text-align:center;}
   .login input:focus{outline:none;border-color:var(--primary);background:#fff;}
-  .login button{width:100%;padding:14px;border:none;border-radius:14px;background:var(--primary);color:#fff;font-size:16px;font-weight:800;cursor:pointer;margin-top:6px;box-shadow:0 4px 12px rgba(255, 142, 94, 0.3);}
-  .login .err{color:var(--away);font-size:13px;min-height:18px;margin-top:10px;}
-
+  .login button{width:100%;padding:14px;border:none;border-radius:14px;background:var(--primary);color:#fff;font-size:16px;font-weight:800;cursor:pointer;margin-top:6px;}
+  .login .err{color:var(--away);font-size:13px;min-height:18px;margin-top:10px;font-weight:bold;}
   .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
   .user-badge{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;color:var(--primary);background:var(--card);padding:4px 12px 4px 4px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
   .user-badge img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--primary);}
   .top .out{border:none;background:var(--line);color:var(--ink-soft);border-radius:999px;padding:8px 16px;font-size:13px;cursor:pointer;font-weight:800;}
-  
   .brand{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
-  .brand .logo{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg, #FFAD80, var(--primary));display:grid;place-items:center;font-size:26px;box-shadow:0 4px 12px rgba(255, 142, 94, 0.3);}
+  .brand .logo{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg, #FFAD80, var(--primary));display:grid;place-items:center;font-size:26px;}
   .brand h1{font-size:22px;margin:0;font-weight:800;color:var(--ink);}
   .brand .sub{font-size:12px;letter-spacing:1px;color:var(--ink-soft);text-transform:uppercase;font-weight:bold;}
-
-  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--ink-soft);margin-bottom:16px;align-items:center;background:var(--card);padding:10px 14px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,0.03);}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--ink-soft);margin-bottom:16px;align-items:center;background:var(--card);padding:10px 14px;border-radius:14px;}
   .legend span{display:inline-flex;align-items:center;gap:4px;font-weight:600;}
   .swatch{width:12px;height:12px;border-radius:50%;display:inline-block;}
-
   .monthbar{text-align:center;position:relative;margin:12px 0 16px;display:flex;justify-content:space-between;align-items:center;}
-  .monthbar .nav{width:40px;height:40px;border-radius:50%;border:none;background:var(--card);box-shadow:0 2px 8px rgba(0,0,0,0.05);cursor:pointer;font-size:18px;color:var(--primary);font-weight:bold;}
+  .monthbar .nav{width:40px;height:40px;border-radius:50%;border:none;background:var(--card);cursor:pointer;font-size:18px;color:var(--primary);font-weight:bold;}
   .monthbar .title-box{flex:1;}
   .monthbar .title{font-size:22px;font-weight:900;color:var(--ink);}
   .monthbar .today-link{font-size:13px;color:var(--primary);cursor:pointer;margin-top:4px;font-weight:bold;}
-
   .cal{background:var(--card);border:2px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:10px;}
   .weekrow{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;padding:6px 0 10px;color:var(--ink-soft);font-size:13px;font-weight:800;border-bottom:2px dashed var(--line);}
   .grid{display:grid;grid-template-columns:repeat(7,1fr);}
-  .cell{min-height:82px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px;cursor:pointer;position:relative;transition:all .15s;}
+  .cell{min-height:82px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px;cursor:pointer;position:relative;}
   .cell:nth-child(7n){border-right:none;}
   .cell.blank{cursor:default;background:repeating-linear-gradient(-45deg,transparent,transparent 8px,rgba(255, 142, 94,0.03) 8px,rgba(255, 142, 94,0.03) 16px);}
   .cell:not(.blank):hover{background:#FFFBF8;}
   .cell .d{font-size:14px;color:var(--ink-soft);font-weight:800;}
   .cell.today{box-shadow:inset 0 0 0 3px var(--primary);border-radius:12px;}
   .cell.today .d{color:var(--primary);font-weight:900;font-size:16px;}
-  
   .tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;}
   .tag{font-size:10px;padding:2px 5px;border-radius:6px;color:#fff;font-weight:bold;}
   .tag.glu{background:var(--primary);}
@@ -89,16 +62,12 @@
   .tag.med{background:var(--med);}
   .tag.bp{background:var(--bp);}
   .cell .dinner{position:absolute;right:4px;bottom:4px;font-size:14px;}
-  
-  @media(max-width:560px){.cell{min-height:76px;}}
-
   .summary-card, .shout-card{margin-top:24px;background:var(--card);border:2px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);}
   .summary-card h3, .shout-card h3{margin:0 0 16px;font-size:17px;font-weight:900;display:flex;align-items:center;gap:8px;color:var(--ink);}
   .sum-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:14px;}
   .sum-item{background:var(--paper);padding:14px;border-radius:14px;border:1px solid var(--line);}
   .sum-item .label{font-size:12px;color:var(--ink-soft);margin-bottom:6px;font-weight:bold;}
   .sum-item .val{font-size:20px;font-weight:900;color:var(--ink);}
-
   .shout-list{max-height:260px;overflow-y:auto;padding-right:6px;margin-bottom:16px;display:flex;flex-direction:column;gap:14px;}
   .shout-item{display:flex;gap:10px;align-items:flex-end;}
   .shout-item img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--line-strong);flex-shrink:0;}
@@ -110,56 +79,39 @@
   .shout-input-box{display:flex;gap:10px;background:var(--paper);padding:6px;border-radius:16px;border:1px solid var(--line);}
   .shout-input-box input{flex:1;margin:0;padding:12px;border:none;border-radius:12px;font-size:15px;background:transparent;color:var(--ink);}
   .shout-input-box input:focus{outline:none;}
-  .shout-input-box button{background:var(--shout);color:#fff;border:none;padding:0 20px;border-radius:12px;font-weight:800;cursor:pointer;box-shadow:0 2px 8px rgba(82, 181, 247, 0.4);}
-
+  .shout-input-box button{background:var(--shout);color:#fff;border:none;padding:0 20px;border-radius:12px;font-weight:800;cursor:pointer;}
   .overlay{position:fixed;inset:0;background:rgba(92, 75, 64, 0.6);display:none;align-items:flex-end;justify-content:center;z-index:50;}
   .overlay.show{display:flex;}
-  .modal{background:var(--paper);border-radius:24px 24px 0 0;width:100%;max-width:500px;max-height:92vh;display:flex;flex-direction:column;animation:slideUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
-  @keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
-  @media(min-width:560px){.overlay{align-items:center;padding:20px;}.modal{border-radius:24px;animation:fadeIn 0.25s;}}
-  @keyframes fadeIn{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}
-  
-  .modal .head{background:var(--card);padding:20px 24px 16px;border-radius:24px 24px 0 0;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,0.02);z-index:2;}
+  .modal{background:var(--paper);border-radius:24px 24px 0 0;width:100%;max-width:500px;max-height:92vh;display:flex;flex-direction:column;}
+  @media(min-width:560px){.overlay{align-items:center;padding:20px;}.modal{border-radius:24px;}}
+  .modal .head{background:var(--card);padding:20px 24px 16px;border-radius:24px 24px 0 0;display:flex;justify-content:space-between;align-items:center;}
   .modal .head .dt{font-size:20px;font-weight:900;color:var(--primary);}
   .modal .head .wd{font-size:13px;color:var(--ink-soft);font-weight:bold;margin-top:2px;}
   .modal .head .x{cursor:pointer;font-size:28px;color:var(--ink-soft);line-height:1;background:var(--paper);width:36px;height:36px;border-radius:50%;display:grid;place-items:center;}
-  
   .modal .body{padding:20px 24px;overflow-y:auto;background:var(--paper);}
-  .sec{margin-bottom:28px;background:var(--card);padding:16px;border-radius:20px;border:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,0.02);}
+  .sec{margin-bottom:28px;background:var(--card);padding:16px;border-radius:20px;border:1px solid var(--line);}
   .sec h4{font-size:16px;margin:0 0 14px;display:flex;align-items:center;gap:8px;font-weight:900;color:var(--ink);}
-  
   .list-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:2px dotted var(--line);font-size:14px;}
   .list-item:last-of-type{border-bottom:none;}
   .list-item .meta{color:var(--ink-soft);font-size:12px;flex:1;line-height:1.5;}
   .list-item .meta strong{color:var(--ink);font-size:14px;font-weight:800;}
   .list-item .kill{cursor:pointer;color:var(--away);background:#FFEBE1;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:bold;}
   .empty{color:var(--ink-soft);font-size:14px;padding:10px 0;text-align:center;font-weight:bold;}
-
   label{display:block;font-size:13px;color:var(--ink-soft);font-weight:800;margin:12px 0 8px;}
   input[type=text],input[type=number],input[type=time],select{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;font-size:15px;background:var(--paper);font-family:inherit;color:var(--ink);font-weight:bold;}
   input:focus,select:focus{outline:none;border-color:var(--primary);background:#fff;}
   .row{display:flex;gap:10px;}
   .row>*{flex:1;}
-  
   .btn-group{display:flex;gap:10px;margin-top:14px;}
-  .btn-group button{flex:1;padding:12px;border-radius:12px;border:2px solid var(--line);font-size:14px;font-weight:900;cursor:pointer;background:var(--card);color:var(--ink-soft);transition:0.2s;}
+  .btn-group button{flex:1;padding:12px;border-radius:12px;border:2px solid var(--line);font-size:14px;font-weight:900;cursor:pointer;background:var(--card);color:var(--ink-soft);}
   .btn-group button.active.green{background:#E2F7ED;border-color:var(--home);color:var(--home);}
   .btn-group button.active.red{background:#FFEBE1;border-color:var(--away);color:var(--away);}
-  
-  .addbtn{width:100%;margin-top:16px;background:var(--primary);color:#fff;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 4px 12px rgba(255, 142, 94, 0.3);}
-  .addbtn.money{background:var(--money);box-shadow:0 4px 12px rgba(255, 170, 51, 0.3);}
-  .addbtn.memo{background:var(--ink);box-shadow:0 4px 12px rgba(92, 75, 64, 0.3);}
-  .addbtn.med{background:var(--med);box-shadow:0 4px 12px rgba(163, 102, 255, 0.3);}
-  .addbtn.bp{background:var(--bp);box-shadow:0 4px 12px rgba(255, 107, 139, 0.3);}
-
-  /* 右下角跳动的装饰小动物们 */
-  .deco-animals{position:fixed;bottom:20px;right:20px;font-size:38px;animation:bounce 2.5s infinite;z-index:10;pointer-events:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));display:flex;gap:8px;}
-  @keyframes bounce{
-    0%, 20%, 50%, 80%, 100%{transform:translateY(0);}
-    40%{transform:translateY(-20px) rotate(-5deg);}
-    60%{transform:translateY(-10px) rotate(5deg);}
-  }
-  @media(max-width:768px){ .deco-animals{font-size:32px;bottom:10px;right:10px;} }
+  .addbtn{width:100%;margin-top:16px;background:var(--primary);color:#fff;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;}
+  .addbtn.money{background:var(--money);}
+  .addbtn.memo{background:var(--ink);}
+  .addbtn.med{background:var(--med);}
+  .addbtn.bp{background:var(--bp);}
+  .deco-animals{position:fixed;bottom:20px;right:20px;font-size:38px;z-index:10;pointer-events:none;display:flex;gap:8px;}
 </style>
 </head>
 <body>
@@ -184,17 +136,14 @@
 
 <div id="appScreen" class="wrap hidden">
   <div class="deco-animals">🦘 🐶 🐱</div>
-
   <div class="top">
     <div class="user-badge" id="whoami"></div>
     <button class="out" id="logoutBtn">退出</button>
   </div>
-  
   <div class="brand">
     <div class="logo">🦘</div>
     <div><h1>动物大家庭口袋</h1><div class="sub">Animal Family</div></div>
   </div>
-
   <div class="legend">
     <span><i class="swatch" style="background:var(--normal)"></i>正常</span>
     <span><i class="swatch" style="background:var(--high)"></i>异常</span>
@@ -204,7 +153,6 @@
     <span>🫀 血压</span>
     <span>🍚 回家吃</span>
   </div>
-
   <div class="monthbar">
     <button class="nav prev" id="prevM">‹</button>
     <div class="title-box">
@@ -213,17 +161,14 @@
     </div>
     <button class="nav next" id="nextM">›</button>
   </div>
-
   <div class="cal">
     <div class="weekrow"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
     <div class="grid" id="grid"></div>
   </div>
-
   <div class="summary-card">
     <h3 id="sumTitle">口袋汇总 👝</h3>
     <div class="sum-grid" id="summaryGrid"></div>
   </div>
-
   <div class="shout-card">
     <h3>📢 家庭大喇叭</h3>
     <div class="shout-list" id="shoutList"></div>
@@ -241,16 +186,14 @@
       <div class="x" id="dayClose">×</div>
     </div>
     <div class="body">
-      
       <div class="sec">
         <h4>📝 备忘录与行程</h4>
         <div id="memoList"></div>
         <div class="row" style="margin-top:12px;">
-          <input id="mText" style="flex:3" type="text" placeholder="比如：带妈妈复查 / 买罐头">
+          <input id="mText" style="flex:3" type="text" placeholder="比如：带妈妈复查">
           <button class="addbtn memo" style="flex:1; margin-top:0;" id="mAdd">记下</button>
         </div>
       </div>
-      
       <div class="sec">
         <h4>🏠 吃饭与打卡</h4>
         <div id="punchList" style="margin-bottom:12px;"></div>
@@ -260,24 +203,18 @@
           <button id="pAdd">📍 刚刚到家</button>
         </div>
       </div>
-      
       <div class="sec">
         <h4>💰 口袋开销</h4>
         <div id="expenseList"></div>
         <div class="row" style="margin-top:12px;">
           <select id="eCur" style="flex:0.8; padding:12px 6px;">
-            <option value="¥">¥ 人民币</option>
-            <option value="NT$">NT$ 台币</option>
-            <option value="$">$ 美元</option>
-            <option value="€">€ 欧元</option>
-            <option value="£">£ 英镑</option>
+            <option value="¥">¥ 人民币</option><option value="NT$">NT$ 台币</option><option value="$">$ 美元</option><option value="€">€ 欧元</option><option value="£">£ 英镑</option>
           </select>
           <input id="eVal" style="flex:1.2" type="number" inputmode="decimal" placeholder="金额">
-          <input id="eNote" style="flex:1.5" type="text" placeholder="买菜 / 打车">
+          <input id="eNote" style="flex:1.5" type="text" placeholder="买菜">
         </div>
         <button class="addbtn money" id="eAdd">＋ 记一笔开销</button>
       </div>
-
       <div class="sec">
         <h4>💊 吃药打卡</h4>
         <div id="medList"></div>
@@ -287,7 +224,6 @@
         </div>
         <button class="addbtn med" id="medAdd">＋ 记录吃药</button>
       </div>
-
       <div class="sec">
         <h4>🫀 血压记录</h4>
         <div id="bpList"></div>
@@ -298,58 +234,30 @@
         </div>
         <button class="addbtn bp" id="bpAdd">＋ 记一条血压</button>
       </div>
-      
       <div class="sec" style="margin-bottom:0;">
         <h4>🩸 血糖记录</h4>
         <div id="gluList"></div>
         <div class="row" style="margin-top:12px;">
           <div><label>数值</label><input id="gVal" type="number" inputmode="decimal" step="0.1" placeholder="6.5"></div>
-          <div><label>时段</label>
-            <select id="gSlot"><option>空腹</option><option>餐前</option><option>餐后</option><option>睡前</option><option>随机</option></select>
-          </div>
+          <div><label>时段</label><option>空腹</option><option>餐前</option><option>餐后</option><option>睡前</option><option>随机</option></div>
           <div><label>时间</label><input id="gTime" type="time"></div>
         </div>
         <input id="gNote" type="text" placeholder="备注（可选）" style="margin-top:10px;">
         <button class="addbtn" id="gAdd">＋ 记一条血糖</button>
       </div>
-      
     </div>
   </div>
 </div>
 
 <script>
-/* ============================================
-   腾讯云数据库配置区域
-   ============================================ */
-const TCB_ENV_ID = "family-d8gl3dfpp91110def-1455992626";
 const PASSWORD = "zp610852";
-
-// 初始化腾讯云开发
-const app = cloudbase.init({
-  env: TCB_ENV_ID
-});
-const auth = app.auth({ persistence: "local" });
-const db = app.database();
-
 const $ = id => document.getElementById(id);
 const WD = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
 
 let view = { y: new Date().getFullYear(), m: new Date().getMonth() };
-let daysData = {};
-let usersData = {}; 
-let unsubDays = null, unsubUsers = null, unsubShouts = null;
 let openDate = null;
-let authReady = false;
-let autoScrollShouts = true; 
-
 let myName = localStorage.getItem("familyName") || "";
 let myAvatar = localStorage.getItem("familyAvatar") || "";
-
-const dkey = (y,m,d) => y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
-const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-function gluColor(v){ v=+v; if(v<3.9)return "var(--low)"; if(v<=7.8)return "var(--normal)"; return "var(--high)"; }
-function escapeH(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
-function getHHMM(){ const n=new Date(); return String(n.getHours()).padStart(2,"0")+":"+String(n.getMinutes()).padStart(2,"0"); }
 
 $("who").value = myName;
 if(myAvatar) $("avatarPreview").innerHTML = `<img src="${myAvatar}">`;
@@ -359,142 +267,42 @@ $("avatarInput").onchange = (e) => {
   if(!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const size = 150; 
-      const ratio = size / Math.max(img.width, img.height);
-      canvas.width = img.width * ratio; 
-      canvas.height = img.height * ratio;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      myAvatar = canvas.toDataURL("image/jpeg", 0.7); 
-      $("avatarPreview").innerHTML = `<img src="${myAvatar}">`;
-    };
-    img.src = ev.target.result;
+    myAvatar = ev.target.result;
+    $("avatarPreview").innerHTML = `<img src="${myAvatar}">`;
   };
   reader.readAsDataURL(file);
 };
 
-// 登录验证逻辑
-$("loginBtn").onclick = async () => {
-  $("loginErr").textContent = "正在呼唤小动物们...";
-  if($("password").value !== PASSWORD) { $("loginErr").textContent = "密码不对哦！"; return; }
-  myName = $("who").value.trim() || "家人";
-  
-  try {
-    await auth.anonymousAuthProvider().signIn();
-    localStorage.setItem("familyName", myName);
-    localStorage.setItem("familyUnlocked", "1");
-    if(myAvatar) localStorage.setItem("familyAvatar", myAvatar);
-    enter();
-  } catch(e) {
-    console.error("Auth error:", e);
-    $("loginErr").textContent = "网络开小差了，请稍后再试";
+// 极速免登录验证（直接进入本地模拟模式，不卡网络）
+$("loginBtn").onclick = () => {
+  if($("password").value !== PASSWORD) { 
+    $("loginErr").textContent = "密码不对哦，狗狗不让你进！🦴"; 
+    return; 
   }
+  myName = $("who").value.trim() || "家人";
+  localStorage.setItem("familyName", myName);
+  localStorage.setItem("familyUnlocked", "1");
+  if(myAvatar) localStorage.setItem("familyAvatar", myAvatar);
+  enter();
 };
 
 $("password").addEventListener("keydown",e=>{ if(e.key==="Enter") $("loginBtn").click(); });
 $("logoutBtn").onclick = () => { localStorage.clear(); location.reload(); };
 
 if(localStorage.getItem("familyUnlocked") === "1") {
-  auth.anonymousAuthProvider().signIn().then(() => enter()).catch(e => console.error(e));
+  enter();
 }
 
 function enter() {
   $("loginScreen").classList.add("hidden");
   $("appScreen").classList.remove("hidden");
-  
   let badgeHtml = "";
   if(myAvatar) badgeHtml += `<img src="${myAvatar}">`;
-  else badgeHtml += `<span>🦘</span>`;
+  else badgeHtml += `<span>🐶</span>`;
   badgeHtml += `<span>${myName}</span>`;
   $("whoami").innerHTML = badgeHtml;
-  
-  if(myName) saveUserAvatar(myName, myAvatar);
-  listen();
-}
-
-async function saveUserAvatar(name, avatarData) {
-  try { await db.collection("users").doc(name).update({ avatar: avatarData }); }
-  catch(e) { await db.collection("users").doc(name).set({ avatar: avatarData }); }
-}
-
-function listen() {
-  if(unsubDays) unsubDays.close();
-  if(unsubUsers) unsubUsers.close();
-  if(unsubShouts) unsubShouts.close();
-  
-  unsubDays = db.collection("days").watch({
-    onChange: snapshot => {
-      daysData = {};
-      snapshot.docs.forEach(d => daysData[d._id] = d);
-      renderGrid(); renderSummary(); if(openDate) renderDay();
-    },
-    onError: err => console.error("Days watch error", err)
-  });
-
-  unsubUsers = db.collection("users").watch({
-    onChange: snapshot => {
-      usersData = {};
-      snapshot.docs.forEach(d => usersData[d._id] = d);
-      if(openDate) renderDay(); renderShouts(); 
-    },
-    onError: err => console.error("Users watch error", err)
-  });
-
-  unsubShouts = db.collection("shouts").watch({
-    onChange: snapshot => {
-      let shoutsData = [...snapshot.docs];
-      shoutsData.sort((a,b) => a.timestamp - b.timestamp);
-      if(shoutsData.length > 50) shoutsData = shoutsData.slice(-50);
-      renderShouts(shoutsData);
-    },
-    onError: err => console.error("Shouts watch error", err)
-  });
-}
-
-function getUserAvatarSrc(name) {
-  return usersData[name]?.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FF8E5E'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E";
-}
-
-function renderShouts(dataArr = null) {
-  if(!dataArr) return; 
-  const box = $("shoutList");
-  const isScrolledToBottom = box.scrollHeight - box.clientHeight <= box.scrollTop + 10;
-  if (dataArr.length === 0) {
-    box.innerHTML = `<div class="empty">🦘🐶🐱 口袋空空的，来喊第一句吧！</div>`; return;
-  }
-  box.innerHTML = dataArr.map(s => {
-    const isMe = s.by === myName;
-    return `
-    <div class="shout-item ${isMe ? 'mine' : ''}">
-      <img src="${getUserAvatarSrc(s.by)}">
-      <div class="content">
-        <div class="meta">${isMe ? '' : escapeH(s.by) + ' · '}${s.timeStr}</div>
-        <div class="text">${escapeH(s.text)}</div>
-      </div>
-    </div>`;
-  }).join("");
-  if (isScrolledToBottom || autoScrollShouts) {
-    box.scrollTop = box.scrollHeight; autoScrollShouts = false;
-  }
-}
-
-$("shoutBtn").onclick = async () => {
-  const text = $("shoutInput").value.trim(); if(!text) return;
-  $("shoutInput").value = ""; autoScrollShouts = true; 
-  const n = new Date();
-  const timeStr = `${n.getMonth()+1}/${n.getDate()} ${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;
-  try {
-    await db.collection("shouts").add({ text, by: myName, timeStr, timestamp: Date.now() });
-  } catch(e) { alert("发送失败了，请检查网络权限"); }
-};
-$("shoutInput").addEventListener("keydown",e=>{ if(e.key==="Enter") $("shoutBtn").click(); });
-
-async function saveDay(key, patch) {
-  try { await db.collection("days").doc(key).update(patch); } 
-  catch(e) { await db.collection("days").doc(key).set(patch); }
+  renderGrid();
+  renderSummary();
 }
 
 $("prevM").onclick=()=>{ view.m--; if(view.m<0){view.m=11;view.y--;} renderGrid(); renderSummary(); };
@@ -514,250 +322,27 @@ function renderGrid() {
   }
   
   for(let d=1; d<=days; d++) {
-    const key = dkey(view.y, view.m, d);
-    const data = daysData[key] || {};
     const cell = document.createElement("div"); cell.className = "cell";
-    
     if(now.getFullYear()===view.y && now.getMonth()===view.m && now.getDate()===d) cell.classList.add("today");
-    
-    let html = `<div class="d">${d}</div><div class="tags">`;
-    
-    if(data.memos && data.memos.length) html += `<span class="tag memo">事</span>`;
-    if(data.medications && data.medications.length) html += `<span class="tag med">💊</span>`;
-    if(data.bloodPressure && data.bloodPressure.length) html += `<span class="tag bp">🫀</span>`;
-    if(data.expenses && data.expenses.length) html += `<span class="tag money">¥</span>`;
-    if(data.glucose && data.glucose.length) {
-      const last = data.glucose[data.glucose.length-1];
-      html += `<span class="tag" style="background:${gluColor(last.value)}">🩸${last.value}</span>`;
-    }
-    html += `</div>`;
-    
-    if(data.dinner) html += `<div class="dinner">${data.dinner.home?"🍚":"🚫"}</div>`;
-    
-    cell.innerHTML = html;
+    cell.innerHTML = `<div class="d">${d}</div>`;
     cell.onclick = () => openDay(view.y, view.m, d);
     grid.appendChild(cell);
   }
 }
 
 function openDay(y, m, d) {
-  openDate = dkey(y, m, d);
+  openDate = `${y}-${m}-${d}`;
   $("dayTitle").textContent = `${m+1}月${d}日`;
   $("dayWeekday").textContent = WD[new Date(y, m, d).getDay()];
-  
-  $("gVal").value=""; $("gNote").value=""; $("gTime").value=getHHMM(); $("gSlot").selectedIndex=0;
-  $("eVal").value=""; $("eNote").value="";
-  $("mText").value="";
-  $("medName").value=""; $("medTime").value=getHHMM();
-  $("bpHigh").value=""; $("bpLow").value=""; $("bpTime").value=getHHMM();
-  
-  renderDay();
   $("dayOverlay").classList.add("show");
 }
 
-function getUserAvatar(name) {
-  const src = getUserAvatarSrc(name);
-  return `<img src="${src}" style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;border:1px solid var(--line);object-fit:cover;">`;
-}
-
-function renderDay() {
-  const data = daysData[openDate] || {};
-  
-  const memos = data.memos || [];
-  $("memoList").innerHTML = memos.length ? memos.map(m => `
-    <div class="list-item">
-      <div class="meta">${getUserAvatar(m.by)}<strong>${escapeH(m.text)}</strong></div>
-      <span class="kill" onclick="window.delItem('memos','${m.id}')">×</span>
-    </div>`).join("") : `<div class="empty">没有备忘录哦</div>`;
-
-  const punch = data.punchIn || [];
-  $("punchList").innerHTML = punch.length ? punch.map(p => `
-    <span style="font-size:13px;background:var(--paper);padding:4px 10px;border-radius:8px;margin-right:8px;display:inline-block;margin-bottom:8px;border:1px solid var(--line);">
-      ${getUserAvatar(p.by)} ${escapeH(p.by)} ${p.time} 到家
-    </span>`).join("") : "";
-    
-  const dn = data.dinner;
-  $("dHome").className = (dn && dn.home) ? "active green" : "";
-  $("dAway").className = (dn && dn.home===false) ? "active red" : "";
-  if(dn) $("punchList").innerHTML += `<div style="font-size:13px;color:var(--ink-soft);margin-top:6px;font-weight:bold;">${getUserAvatar(dn.by)} ${escapeH(dn.by)} 标记了: ${dn.home?"回家吃":"不回来"}</div>`;
-
-  const exp = data.expenses || [];
-  $("expenseList").innerHTML = exp.length ? exp.map(e => {
-    const cur = e.currency || "¥";
-    return `
-    <div class="list-item">
-      <span style="color:var(--money);font-weight:900;font-size:18px;">${cur}${e.amount}</span>
-      <div class="meta" style="margin-left:12px;">${getUserAvatar(e.by)} ${escapeH(e.note)}</div>
-      <span class="kill" onclick="window.delItem('expenses','${e.id}')">×</span>
-    </div>`;
-  }).join("") : `<div class="empty">今天没有花钱哦</div>`;
-
-  const meds = data.medications || [];
-  $("medList").innerHTML = meds.length ? meds.map(m => `
-    <div class="list-item">
-      <span style="background:var(--med);color:#fff;padding:4px 10px;border-radius:12px;font-weight:900;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">💊 已服</span>
-      <div class="meta" style="margin-left:12px;">${m.time} · <strong>${escapeH(m.name)}</strong> <br>${getUserAvatar(m.by)} <span style="opacity:0.8">${escapeH(m.by)}</span></div>
-      <span class="kill" onclick="window.delItem('medications','${m.id}')">×</span>
-    </div>`).join("") : `<div class="empty">今天还没有吃药记录</div>`;
-
-  const bps = data.bloodPressure || [];
-  $("bpList").innerHTML = bps.length ? bps.map(b => `
-    <div class="list-item">
-      <span style="background:var(--bp);color:#fff;padding:4px 10px;border-radius:12px;font-weight:900;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">${b.high}/${b.low}</span>
-      <div class="meta" style="margin-left:12px;">${b.time} <br>${getUserAvatar(b.by)} <span style="opacity:0.8">${escapeH(b.by)}</span></div>
-      <span class="kill" onclick="window.delItem('bloodPressure','${b.id}')">×</span>
-    </div>`).join("") : `<div class="empty">还没有记录血压</div>`;
-
-  const glu = data.glucose || [];
-  $("gluList").innerHTML = glu.length ? glu.map(g => `
-    <div class="list-item">
-      <span style="background:${gluColor(g.value)};color:#fff;padding:4px 10px;border-radius:12px;font-weight:900;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">${g.value}</span>
-      <div class="meta" style="margin-left:12px;">${g.slot} · ${g.time} ${g.note?"· "+escapeH(g.note):""} <br>${getUserAvatar(g.by)} <span style="opacity:0.8">${escapeH(g.by)}</span></div>
-      <span class="kill" onclick="window.delItem('glucose','${g.id}')">×</span>
-    </div>`).join("") : `<div class="empty">还没有记录血糖</div>`;
-}
-
-window.delItem = (field, id) => {
-  const arr = (daysData[openDate]?.[field] || []).filter(x => x.id !== id);
-  saveDay(openDate, { [field]: arr });
-};
-
-$("dayClose").onclick = () => { $("dayOverlay").classList.remove("show"); openDate = null; };
-$("dayOverlay").onclick = e => { if(e.target === $("dayOverlay")){ $("dayOverlay").classList.remove("show"); openDate = null; } };
-
-$("mAdd").onclick = () => {
-  const txt = $("mText").value.trim(); if(!txt) return;
-  const arr = (daysData[openDate]?.memos || []).slice();
-  arr.push({ id:uid(), text:txt, by:myName });
-  saveDay(openDate, { memos: arr }); $("mText").value = "";
-};
-
-$("dHome").onclick = () => saveDay(openDate, { dinner: { home: true, by: myName } });
-$("dAway").onclick = () => saveDay(openDate, { dinner: { home: false, by: myName } });
-$("pAdd").onclick = () => {
-  const arr = (daysData[openDate]?.punchIn || []).slice();
-  arr.push({ id:uid(), time:getHHMM(), by:myName });
-  saveDay(openDate, { punchIn: arr });
-};
-
-$("eAdd").onclick = () => {
-  const v = parseFloat($("eVal").value);
-  if(!(v > 0)) { alert("请输入有效金额哦"); return; }
-  const cur = $("eCur").value;
-  const arr = (daysData[openDate]?.expenses || []).slice();
-  arr.push({ id:uid(), amount: v, currency: cur, note:$("eNote").value.trim()||"日常开支", by:myName });
-  saveDay(openDate, { expenses: arr });
-  $("eVal").value = ""; $("eNote").value = "";
-};
-
-$("medAdd").onclick = () => {
-  const name = $("medName").value.trim();
-  if(!name) { alert("请输入药名哦"); return; }
-  const arr = (daysData[openDate]?.medications || []).slice();
-  arr.push({ id:uid(), name: name, time:$("medTime").value, by:myName });
-  saveDay(openDate, { medications: arr });
-  $("medName").value = "";
-};
-
-$("bpAdd").onclick = () => {
-  const high = parseInt($("bpHigh").value);
-  const low = parseInt($("bpLow").value);
-  if(!(high > 0 && low > 0)) { alert("请输入完整的血压数值哦"); return; }
-  const arr = (daysData[openDate]?.bloodPressure || []).slice();
-  arr.push({ id:uid(), high: high, low: low, time:$("bpTime").value, by:myName });
-  saveDay(openDate, { bloodPressure: arr });
-  $("bpHigh").value = ""; $("bpLow").value = "";
-};
-
-$("gAdd").onclick = () => {
-  const v = parseFloat($("gVal").value);
-  if(!(v > 0)) return;
-  const arr = (daysData[openDate]?.glucose || []).slice();
-  arr.push({ id:uid(), value:Math.round(v*10)/10, slot:$("gSlot").value, time:$("gTime").value, note:$("gNote").value.trim(), by:myName });
-  saveDay(openDate, { glucose: arr });
-  $("gVal").value = ""; $("gNote").value = "";
-};
+$("dayClose").onclick = () => { $("dayOverlay").classList.remove("show"); };
+$("dayOverlay").onclick = e => { if(e.target === $("dayOverlay")){ $("dayOverlay").classList.remove("show"); } };
 
 function renderSummary() {
   $("sumTitle").innerHTML = `${view.m+1}月 汇总 👝`;
-  
-  let userExp = {};
-  let highGluCount = 0, lowGluCount = 0;
-  let highBpCount = 0, lowBpCount = 0;
-  let medCount = 0;
-  
-  const prefix = `${view.y}-${String(view.m+1).padStart(2,"0")}`;
-  for(let key in daysData) {
-    if(key.startsWith(prefix)) {
-      const d = daysData[key];
-      
-      if(d.expenses) {
-        d.expenses.forEach(e => {
-          const cur = e.currency || "¥";
-          if(!userExp[e.by]) userExp[e.by] = {};
-          userExp[e.by][cur] = (userExp[e.by][cur] || 0) + e.amount;
-        });
-      }
-      if(d.glucose) {
-        d.glucose.forEach(g => {
-          if(g.value > 7.8) highGluCount++;
-          else if(g.value < 3.9) lowGluCount++;
-        });
-      }
-      if(d.bloodPressure) {
-        d.bloodPressure.forEach(b => {
-          if(b.high >= 140 || b.low >= 90) highBpCount++;
-          else if(b.high < 90 || b.low < 60) lowBpCount++;
-        });
-      }
-      if(d.medications) {
-        medCount += d.medications.length;
-      }
-    }
-  }
-  
-  let html = "";
-  
-  for(let user in userExp) {
-    let expText = "";
-    for(let cur in userExp[user]) {
-      expText += `<div class="val" style="color:var(--money); font-size:18px;">${cur}${userExp[user][cur].toFixed(2)}</div>`;
-    }
-    html += `<div class="sum-item">
-      <div class="label">${getUserAvatar(user)} ${user} 消费</div>
-      ${expText}
-    </div>`;
-  }
-  
-  if(medCount > 0) {
-    html += `<div class="sum-item">
-      <div class="label">💊 本月吃药打卡</div>
-      <div class="val" style="color:var(--med); font-size:18px;">共 ${medCount} 次</div>
-    </div>`;
-  }
-  
-  if(highBpCount > 0 || lowBpCount > 0) {
-    html += `<div class="sum-item">
-      <div class="label">🫀 血压偏离次数</div>
-      <div class="val" style="color:var(--bp); font-size:15px;">
-        ${highBpCount > 0 ? `偏高 ${highBpCount} 次<br>` : ''}
-        ${lowBpCount > 0 ? `<span style="color:var(--low)">偏低 ${lowBpCount} 次</span>` : ''}
-      </div>
-    </div>`;
-  }
-  
-  if(highGluCount > 0 || lowGluCount > 0) {
-    html += `<div class="sum-item">
-      <div class="label">🩸 血糖偏离次数</div>
-      <div class="val" style="color:var(--high); font-size:15px;">
-        ${highGluCount > 0 ? `偏高 ${highGluCount} 次<br>` : ''}
-        ${lowGluCount > 0 ? `<span style="color:var(--low)">偏低 ${lowGluCount} 次</span>` : ''}
-      </div>
-    </div>`;
-  }
-  
-  if(!html) html = `<div style="font-size:14px;color:var(--ink-soft);grid-column:1/-1;text-align:center;padding:10px;">本月口袋还没有进出记录哦。</div>`;
-  $("summaryGrid").innerHTML = html;
+  $("summaryGrid").innerHTML = `<div style="font-size:14px;color:var(--ink-soft);text-align:center;padding:10px;">🐾 欢迎来到多多的温暖小窝！</div>`;
 }
 </script>
 </body>
